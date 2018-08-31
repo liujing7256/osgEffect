@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{717D1F94-7A90-3A25-84D4-60E6FF7B6914}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{8c0ca4c8-6d50-4f00-92a1-135c4db2475e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader Files">
+      <UniqueIdentifier>{a2c68833-6057-449a-95c5-f048b35984aa}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\effectcompositor\data\shaders\colorgrading.xml">
+      <Filter>Shader Files</Filter>
+    </Xml>
+    <Xml Include="..\..\effectcompositor\data\shaders\dof.xml">
+      <Filter>Shader Files</Filter>
+    </Xml>
+    <Xml Include="..\..\effectcompositor\data\shaders\hdr.xml">
+      <Filter>Shader Files</Filter>
+    </Xml>
+    <Xml Include="..\..\effectcompositor\data\shaders\motionblur.xml">
+      <Filter>Shader Files</Filter>
+    </Xml>
+    <Xml Include="..\..\effectcompositor\data\shaders\nightvision.xml">
+      <Filter>Shader Files</Filter>
+    </Xml>
+    <Xml Include="..\..\effectcompositor\data\shaders\pbr.xml">
+      <Filter>Shader Files</Filter>
+    </Xml>
+    <Xml Include="..\..\effectcompositor\data\shaders\pessao.xml">
+      <Filter>Shader Files</Filter>
+    </Xml>
+    <Xml Include="..\..\effectcompositor\data\shaders\smaa.xml">
+      <Filter>Shader Files</Filter>
+    </Xml>
+    <Xml Include="..\..\effectcompositor\data\shaders\ssao.xml">
+      <Filter>Shader Files</Filter>
+    </Xml>
+    <Xml Include="..\..\effectcompositor\data\shaders\ForwardPass.xml">
+      <Filter>Shader Files</Filter>
+    </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\effectcompositor\data\shaders\deferred_shading_pbr.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="..\..\effectcompositor\data\shaders\deferred_shading_pbr.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="..\..\effectcompositor\data\shaders\gbuffer.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="..\..\effectcompositor\data\shaders\gbuffer.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="..\..\effectcompositor\data\shaders\lamp.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="..\..\effectcompositor\data\shaders\lamp.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="..\..\effectcompositor\data\shaders\pbr.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="..\..\effectcompositor\data\shaders\pbr.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\effectcompositor\EffectCompositor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\effectcompositor\SkyBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\effectcompositor\PhysicMaterial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\effectcompositor\EffectAnalysisHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\effectcompositor\EffectCompositor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\effectcompositor\EffectCompositorXML.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\effectcompositor\osgeffectcompositor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\effectcompositor\SkyBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\effectcompositor\PhysicMaterial.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
