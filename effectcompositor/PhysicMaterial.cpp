@@ -285,8 +285,10 @@ void PhysicMaterial::setIrradianceMap(osg::Image* posX, osg::Image* negX, osg::I
 	setIrradianceMap(cubemap);
 }
 
-void PhysicMaterial::loadIrradianceMap(const std::string& filePath)
+osg::ref_ptr<osg::TextureCubeMap> PhysicMaterial::loadCubeMap(const std::string& filePath)
 {
+	osg::ref_ptr<osg::TextureCubeMap> cubemap;
+
 	std::string absolutePath = osgDB::findDataFile(filePath);
 	std::map<std::string, std::string> imageMap;
 
@@ -333,7 +335,8 @@ void PhysicMaterial::loadIrradianceMap(const std::string& filePath)
 		}
 	}
 
-	if (imageMap.size() < 6) return;
+	if (imageMap.size() < 6) 
+		return cubemap;
 
 	osg::ref_ptr<osg::Image> imagePosX = osgDB::readImageFile(imageMap["posx"]);
 	osg::ref_ptr<osg::Image> imageNegX = osgDB::readImageFile(imageMap["negx"]);
@@ -342,7 +345,33 @@ void PhysicMaterial::loadIrradianceMap(const std::string& filePath)
 	osg::ref_ptr<osg::Image> imagePosZ = osgDB::readImageFile(imageMap["posz"]);
 	osg::ref_ptr<osg::Image> imageNegZ = osgDB::readImageFile(imageMap["negz"]);
 
-	setIrradianceMap(imagePosX, imageNegX, imagePosY, imageNegY, imagePosZ, imageNegZ);
+
+	if (imagePosX.valid() && imageNegX.valid() && imagePosY.valid() && imageNegY.valid() && imagePosZ.valid() && imageNegZ.valid())
+	{
+		imagePosX->flipVertical();
+		imageNegX->flipVertical();
+		imagePosY->flipVertical();
+		imageNegY->flipVertical();
+		imagePosZ->flipVertical();
+		imageNegZ->flipVertical();
+
+		cubemap = new osg::TextureCubeMap;
+		cubemap->setImage(osg::TextureCubeMap::POSITIVE_X, imagePosX);
+		cubemap->setImage(osg::TextureCubeMap::NEGATIVE_X, imageNegX);
+		cubemap->setImage(osg::TextureCubeMap::POSITIVE_Y, imagePosY);
+		cubemap->setImage(osg::TextureCubeMap::NEGATIVE_Y, imageNegY);
+		cubemap->setImage(osg::TextureCubeMap::POSITIVE_Z, imagePosZ);
+		cubemap->setImage(osg::TextureCubeMap::NEGATIVE_Z, imageNegZ);
+
+		cubemap->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE);
+		cubemap->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE);
+		//cubemap->setWrap(osg::Texture::WRAP_R, osg::Texture::CLAMP_TO_EDGE);
+
+		cubemap->setFilter(osg::Texture::MIN_FILTER, osg::Texture::NEAREST);
+		cubemap->setFilter(osg::Texture::MAG_FILTER, osg::Texture::NEAREST);
+	}
+
+	return cubemap.get();
 }
 
 osg::ref_ptr<osg::TextureCubeMap> PhysicMaterial::getIrradianceMap() const

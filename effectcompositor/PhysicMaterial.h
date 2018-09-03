@@ -51,7 +51,9 @@ public:
 	osg::ref_ptr<osg::TextureCubeMap> getIrradianceMap() const;
 	void setIrradianceMap(osg::TextureCubeMap* texture);
 	void setIrradianceMap(osg::Image* posX, osg::Image* negX, osg::Image* posY, osg::Image* negY, osg::Image* posZ, osg::Image* negZ);
-	void loadIrradianceMap(const std::string& filePath);
+
+
+	static osg::ref_ptr<osg::TextureCubeMap> loadCubeMap(const std::string& filePath);
 
 	void setAlbedo(osg::Vec3f albedo);
 	osg::Vec3f getAlbedo() const;

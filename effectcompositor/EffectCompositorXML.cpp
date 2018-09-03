@@ -845,7 +845,10 @@ osg::Shader* EffectCompositor::createShaderFromXML( osgDB::XmlNode* xmlNode, boo
             else
             {
                 filePath = osgDB::getFilePath( shaderFile );
-                shader->loadShaderSourceFromFile( shaderFile );
+				osgDB::ifstream istream(filePath.c_str(), std::ios::in | std::ios::binary);
+				std::stringstream ss;
+				ss << istream.rdbuf();
+				shader->setShaderSource(ss.str());
             }
         }
         else

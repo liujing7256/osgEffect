@@ -158,44 +158,6 @@ osg::Geode* createLightMark(const osg::Vec4& pos)
 }
 
 
-osg::ref_ptr<osg::TextureCubeMap> loadEnvironmentMap( const std::string& path)
-{
-	std::string filePath = path;
-
-	#define CUBEMAP_FILENAME(face) #face ".dds"
-
-	osg::ref_ptr<osg::Image> imagePosX = osgDB::readImageFile(filePath + CUBEMAP_FILENAME(posx));
-	osg::ref_ptr<osg::Image> imageNegX = osgDB::readImageFile(filePath + CUBEMAP_FILENAME(negx));
-	osg::ref_ptr<osg::Image> imagePosY = osgDB::readImageFile(filePath + CUBEMAP_FILENAME(negy));
-	osg::ref_ptr<osg::Image> imageNegY = osgDB::readImageFile(filePath + CUBEMAP_FILENAME(posy));
-	osg::ref_ptr<osg::Image> imagePosZ = osgDB::readImageFile(filePath + CUBEMAP_FILENAME(posz));
-	osg::ref_ptr<osg::Image> imageNegZ = osgDB::readImageFile(filePath + CUBEMAP_FILENAME(negz));
-
-	osg::ref_ptr<osg::TextureCubeMap> cubemap;
-
-	if (imagePosX && imageNegX && imagePosY && imageNegY && imagePosZ && imageNegZ)
-	{
-		cubemap = new osg::TextureCubeMap;
-		cubemap->setImage(osg::TextureCubeMap::POSITIVE_X, imagePosX);
-		cubemap->setImage(osg::TextureCubeMap::NEGATIVE_X, imageNegX);
-		cubemap->setImage(osg::TextureCubeMap::POSITIVE_Y, imagePosY);
-		cubemap->setImage(osg::TextureCubeMap::NEGATIVE_Y, imageNegY);
-		cubemap->setImage(osg::TextureCubeMap::POSITIVE_Z, imagePosZ);
-		cubemap->setImage(osg::TextureCubeMap::NEGATIVE_Z, imageNegZ);
-
-		cubemap->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE);
-		cubemap->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE);
-		cubemap->setWrap(osg::Texture::WRAP_R, osg::Texture::CLAMP_TO_EDGE);
-
-		cubemap->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR);
-		cubemap->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);
-
-	}
-
-	return cubemap.get();
-}
-
-
 osg::Texture2D *createTexture(const std::string &fileName)
 {
 	osg::ref_ptr<osg::Texture2D> texture;
@@ -228,7 +190,7 @@ osg::Group* createMaterialSpheres()
     osg::Texture2D* metallic = createTexture(MATERIAL_NAME+"\\metallic.png");
     osg::Texture2D* roughness = createTexture(MATERIAL_NAME+"\\roughness.png");
     osg::Texture2D* ao = createTexture(MATERIAL_NAME+"\\ao.png");
-	osg::ref_ptr<osg::TextureCubeMap> irradianceMap = loadEnvironmentMap("\\cube\\");
+	osg::ref_ptr<osg::TextureCubeMap> irradianceMap = PhysicMaterial::loadCubeMap("\\skybox\\room\\");
 
 	for (unsigned int y = 0; y < Y_SEGMENTS; ++y)
 	{
@@ -318,7 +280,8 @@ int main( int argc, char** argv )
 		material->setMetallicMap(metallic);
 		material->setRoughnessMap(roughness);
 		material->setAoMap(ao);
-		material->loadIrradianceMap("\\skybox\\test");
+
+		material->setIrradianceMap(PhysicMaterial::loadCubeMap("\\skybox\\room\\"));
 
 		model->setStateSet(material);
 

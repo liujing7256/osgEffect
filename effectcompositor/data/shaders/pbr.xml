@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<compositor>
+
+  <shader name="gbuffer_vs" type="vertex">
+    <file>gbuffer.vs</file>
+  </shader>
+
+  <shader name="gbuffer_fs" type="fragment">
+    <file>gbuffer.fs</file>
+  </shader>
+
+  <shader name="deferred_shading_pbr_vs" type="vertex">
+    <file>deferred_shading_pbr.vs</file>
+  </shader>
+
+  <shader name="deferred_shading_pbr_fs" type="fragment">
+    <file>deferred_shading_pbr.fs</file>
+  </shader>
+  
+  <shader name="pbr_vs" type="vertex">
+    <file>pbr.vs</file>
+  </shader>
+  
+  <shader name="pbr_fs" type="fragment">
+    <file>pbr.fs</file>
+  </shader>
+  
+  <uniform name="nearPlaneValue" type="float">
+    <inbuilt_value>near_plane</inbuilt_value>
+  </uniform>
+
+  <uniform name="farPlaneValue" type="float">
+    <inbuilt_value>far_plane</inbuilt_value>
+  </uniform>
+
+  <uniform name="viewportWidth" type="float">
+    <inbuilt_value>viewport_width</inbuilt_value>
+  </uniform>
+
+  <uniform name="viewportHeight" type="float">
+    <inbuilt_value>viewport_height</inbuilt_value>
+  </uniform>
+
+
+  <!--
+      Material parameters.
+  -->
+  <uniform name="metallic" type="float">
+    <value>1.0</value>
+  </uniform>
+
+  <uniform name="roughness" type="float">
+    <value>1.0</value>
+  </uniform>
+
+  <uniform name="ao" type="float">
+    <value>1.0</value>
+  </uniform>
+  
+  
+  <buffer name="g_Position" type="2d" width="1024" height="1024">
+    <internal_format>rgba16f</internal_format>
+    <source_format>rgba</source_format>
+    <source_type>float</source_type>
+  </buffer>
+
+  <buffer name="g_Normal" type="2d" width="1024" height="1024">
+    <internal_format>rgba16f</internal_format>
+    <source_format>rgba</source_format>
+    <source_type>float</source_type>
+  </buffer>
+
+  <buffer name="g_AlbedoSpec" type="2d" width="1024" height="1024">
+    <internal_format>rgba</internal_format>
+    <source_format>rgba</source_format>
+    <source_type>ubyte</source_type>
+  </buffer>
+
+
+  <technique>
+    
+    <forward_pass name="Geometry_Pass">
+      <clear_color>0 0 0 1</clear_color>
+      <output_buffer target="color 0">g_Position</output_buffer>
+      <output_buffer target="color 1">g_Normal</output_buffer>
+      <output_buffer target="color 2">g_AlbedoSpec</output_buffer>
+      <shader>gbuffer_vs</shader>
+      <shader>gbuffer_fs</shader>
+    </forward_pass>
+
+    <deferred_pass name="Deferred_PBR_shading_Pass">
+      <input_buffer unit="0" varname="gPosition">g_Position</input_buffer>
+      <input_buffer unit="1" varname="gNormal">g_Normal</input_buffer>
+      <input_buffer unit="2" varname="gAlbedoSpec">g_AlbedoSpec</input_buffer>
+      
+      <uniform>ao</uniform>
+      <uniform>roughness</uniform>
+      <uniform>metallic</uniform>
+      
+      <shader>deferred_shading_pbr_vs</shader>
+      <shader>deferred_shading_pbr_fs</shader>
+    </deferred_pass>
+    
+  </technique>
+
+</compositor>
