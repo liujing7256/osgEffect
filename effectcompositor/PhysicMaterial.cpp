@@ -365,7 +365,7 @@ osg::ref_ptr<osg::TextureCubeMap> PhysicMaterial::loadCubeMap(const std::string&
 
 		cubemap->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE);
 		cubemap->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE);
-		//cubemap->setWrap(osg::Texture::WRAP_R, osg::Texture::CLAMP_TO_EDGE);
+		cubemap->setWrap(osg::Texture::WRAP_R, osg::Texture::CLAMP_TO_EDGE);
 
 		cubemap->setFilter(osg::Texture::MIN_FILTER, osg::Texture::NEAREST);
 		cubemap->setFilter(osg::Texture::MAG_FILTER, osg::Texture::NEAREST);

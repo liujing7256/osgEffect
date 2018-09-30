@@ -725,6 +725,7 @@ osg::Uniform* EffectCompositor::createUniformFromXML( osgDB::XmlNode* xmlNode, b
             // These are defined for obtaining main scene matrices in deferred passes
             else if ( valueName=="fov" ) addInbuiltUniform( SCENE_FOV_IN_RADIANS, uniform );
             else if ( valueName=="aspect_ratio" ) addInbuiltUniform( SCENE_ASPECT_RATIO, uniform );
+			else if ( valueName=="view_matrix") addInbuiltUniform( SCENE_VIEW_MATRIX, uniform );
             else if ( valueName=="modelview_matrix" ) addInbuiltUniform( SCENE_MODELVIEW_MATRIX, uniform );
             else if ( valueName=="inv_modelview_matrix" ) addInbuiltUniform( SCENE_INV_MODELVIEW_MATRIX, uniform );
             else if ( valueName=="projection_matrix" ) addInbuiltUniform( SCENE_PROJECTION_MATRIX, uniform );
@@ -844,8 +845,7 @@ osg::Shader* EffectCompositor::createShaderFromXML( osgDB::XmlNode* xmlNode, boo
             }
             else
             {
-                filePath = osgDB::getFilePath( shaderFile );
-				osgDB::ifstream istream(filePath.c_str(), std::ios::in | std::ios::binary);
+				osgDB::ifstream istream(shaderFile.c_str(), std::ios::in | std::ios::binary);
 				std::stringstream ss;
 				ss << istream.rdbuf();
 				shader->setShaderSource(ss.str());

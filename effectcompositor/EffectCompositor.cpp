@@ -42,6 +42,13 @@ public:
                 
                 const osg::FrameStamp* fs = cv->getFrameStamp();
                 if ( fs ) _compositor->setPreservedNearAndFar( fs->getFrameNumber(), znear, zfar );
+
+				_compositor->setPreservedProjectMatrix(projection);
+
+				osg::Matrixd modelviewMat = *(cv->getModelViewMatrix());
+				osg::Matrixd viewMat = camera->getViewMatrix();
+				_compositor->setPreservedModelViewMatrix(modelviewMat);
+				_compositor->setPreservedViewMatrix(viewMat);
             }
             else if ( camera->getNumChildren()>0 )  // Use camera's own children as display surface
                 camera->osg::Group::traverse( *nv );
@@ -426,6 +433,9 @@ void EffectCompositor::setPreservedNearAndFar( unsigned int frame, double zn, do
     }
 }
 
+
+
+
 void EffectCompositor::traverse( osg::NodeVisitor& nv )
 {
     if ( nv.getVisitorType()==osg::NodeVisitor::CULL_VISITOR )
@@ -490,6 +500,16 @@ void EffectCompositor::traverse( osg::NodeVisitor& nv )
                 case SCENE_ASPECT_RATIO:
                     itr->second->set( (float)aspectRatio );
                     break;
+				case SCENE_VIEW_MATRIX:
+				{
+					//if (cv->getCurrentCamera()) itr->second->set(cv->getCurrentCamera()->getViewMatrix());
+
+					osg::Matrixd mat1 = cv->getCurrentCamera()->getViewMatrix();
+					osg::Matrixd mat2 = getPreservedViewMatrix();
+					itr->second->set(mat1);
+				}
+				
+					break;
                 case SCENE_MODELVIEW_MATRIX:
                     if ( cv->getModelViewMatrix() ) itr->second->set( osg::Matrixf(*cv->getModelViewMatrix()) );
                     break;
@@ -531,4 +551,35 @@ osg::Geode* EffectCompositor::createScreenQuad( float width, float height, float
         new osg::PolygonMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::FILL), values );
     quad->getOrCreateStateSet()->setMode( GL_LIGHTING, values );
     return quad.release();
+}
+
+
+void EffectCompositor::setPreservedProjectMatrix(const osg::Matrixd& mat)
+{
+	_preservedProjectMatrix = mat;
+}
+
+void EffectCompositor::setPreservedModelViewMatrix(const osg::Matrixd& mat)
+{
+	_preservedModelViewMatrix = mat;
+}
+
+void EffectCompositor::setPreservedViewMatrix(const osg::Matrixd& mat)
+{
+	_preservedViewMatrix = mat;
+}
+
+osg::Matrixd EffectCompositor::getPreservedProjectMatrix() const
+{
+	return _preservedProjectMatrix;
+}
+
+osg::Matrixd EffectCompositor::getPreservedModelViewAMatrix() const
+{
+	return _preservedModelViewMatrix;
+}
+
+osg::Matrixd EffectCompositor::getPreservedViewMatrix() const
+{
+	return _preservedViewMatrix;
 }

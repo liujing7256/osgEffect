@@ -185,12 +185,12 @@ osg::Group* createMaterialSpheres()
 	const unsigned int X_SEGMENTS = 6;
 	const unsigned int Y_SEGMENTS = 6;
 
-    osg::Texture2D* albedo = createTexture(MATERIAL_NAME+"\\albedo.png");
-    osg::Texture2D* normal = createTexture(MATERIAL_NAME+"\\normal.png");
-    osg::Texture2D* metallic = createTexture(MATERIAL_NAME+"\\metallic.png");
-    osg::Texture2D* roughness = createTexture(MATERIAL_NAME+"\\roughness.png");
-    osg::Texture2D* ao = createTexture(MATERIAL_NAME+"\\ao.png");
-	osg::ref_ptr<osg::TextureCubeMap> irradianceMap = PhysicMaterial::loadCubeMap("\\skybox\\room\\");
+	osg::ref_ptr<osg::Texture2D> albedo = createTexture(MATERIAL_NAME+"\\albedo.png");
+	osg::ref_ptr<osg::Texture2D> normal = createTexture(MATERIAL_NAME+"\\normal.png");
+	osg::ref_ptr<osg::Texture2D> metallic = createTexture(MATERIAL_NAME+"\\metallic.png");
+	osg::ref_ptr<osg::Texture2D> roughness = createTexture(MATERIAL_NAME+"\\roughness.png");
+	osg::ref_ptr<osg::Texture2D> ao = createTexture(MATERIAL_NAME+"\\ao.png");
+	osg::ref_ptr<osg::TextureCubeMap> irradianceMap = PhysicMaterial::loadCubeMap("\\skybox\\test\\");
 
 	for (unsigned int y = 0; y < Y_SEGMENTS; ++y)
 	{
@@ -227,8 +227,8 @@ osg::Group* createMaterialSpheres()
 #define MODEL_PATH  "/data/models/"
 #define SKYBOX_PATH "/data/images/skybox"
 
-#define WINDOW_WIDTH  800
-#define WINDOW_HEIGHT 600 
+#define WINDOW_WIDTH  1280
+#define WINDOW_HEIGHT 720
 
 int main( int argc, char** argv )
 {
@@ -248,7 +248,7 @@ int main( int argc, char** argv )
     else if ( arguments.read("--analysis-mode") ) displayMode = 1;
     else if ( arguments.read("--compare-mode") ) displayMode = 2;
     
-    std::string effectFile("ForwardPass.xml");
+    std::string effectFile("pbr.xml");
     arguments.read( "--effect", effectFile );
     
     bool useSkyBox = false, shadowed = false;

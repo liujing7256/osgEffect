@@ -1,6 +1,6 @@
 #version 330 core
 
-#pragma import_defines ( NUMBER_LIGHTS )
+#pragma import_defines ( NUMBER_LIGHTS ALBEDOMAP NORMALMAP METALLICMAP ROUGHNESSMAP AOMAP IRRADIANCEMAP )
 
 out vec4 FragColor;
 
@@ -9,14 +9,11 @@ in vec2 TexCoords;
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedoSpec;
-uniform mat4 osg_ViewMatrix;
+uniform sampler2D gRMA;
+
+uniform mat4 osg_ViewMatrixInverse;
 
 #ifdef NUMBER_LIGHTS
-
-// material parameters
-uniform float metallic;
-uniform float roughness;
-uniform float ao;
 
 const float PI = 3.14159265359;
 // ----------------------------------------------------------------------------
@@ -76,27 +73,27 @@ struct Light {
 
 uniform Light Lights[NUMBER_LIGHTS];
 
-vec3 CalcPointOrDirectionalLight(in Light light, in vec3 camPos, in vec3 worldPos, in vec3 worldNormal, in vec3 F0, in vec3 Albedo)
+vec3 CalcPointOrDirectionalLight(in Light light, in vec3 camPos, in vec3 worldPos, in vec3 worldNormal, in vec3 F0, in vec3 albedo, float metallic, float roughness)
 {
 	vec3 Lo = vec3(0.0);
-	float distance    = length(vec3(light.position) - worldPos);
-	float attenuation = 1.0 / (distance * distance);
-
-	vec3 L = normalize(vec3(light.position) - worldPos);
-	//directional light.
-	if (light.position.w < 1.0)
-	{
-		L = vec3(light.position);
-		attenuation = 1.0;
-	}
 
 	vec3 V = normalize(camPos - worldPos);
+	vec3 L = normalize(vec3(light.position) - worldPos);
 	vec3 H = normalize(V + L);
-	vec3 N = normalize(worldNormal);
-	
-	vec3 radiance = light.color * attenuation;
+	vec3 N = worldNormal;
 
-	
+	float distance = length(vec3(light.position) - worldPos);
+	float attenuation = 1.0 / (distance * distance);
+
+	if (light.position.w < 1.0)
+	{
+		attenuation = 1.0;
+		L = normalize(vec3(light.position));
+		H = normalize(V + L);
+
+	}
+
+	vec3 radiance = light.color * attenuation;
 
 	// Cook-Torrance BRDF
 	float NDF = DistributionGGX(N, H, roughness);
@@ -105,11 +102,9 @@ vec3 CalcPointOrDirectionalLight(in Light light, in vec3 camPos, in vec3 worldPo
 
 	vec3  F   = fresnelSchlick(clamp(dot(H, V), 0.0, 1.0), F0);
 
-
 	vec3 nominator = NDF * G * F;
 	float denominator = 4 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
 
-	
 	vec3 specular = nominator / max(denominator, 0.001); // prevent divide by zero for NdotV=0.0 or NdotL=0.0
 	
 	// kS is equal to Fresnel
@@ -127,33 +122,51 @@ vec3 CalcPointOrDirectionalLight(in Light light, in vec3 camPos, in vec3 worldPo
 	float NdotL = max(dot(N, L), 0.0);
 
 	// add to outgoing radiance Lo
-	Lo += (kD * Albedo / PI + specular) * radiance * NdotL;  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
-
-
-
-	/*vec3 diffuse = max(dot(N, L), 0.0) * Albedo * light.color;
-
-	float spec = pow(max(dot(N, H), 0.0), 16.0);
-	specular = light.color * spec * vec3(1.0);
-
-	Lo += diffuse + specular;
-	
-	Lo *= 0.3;*/
+	Lo = (kD * albedo / PI + specular) * radiance * NdotL;  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
 
 	return Lo;
 }
 
 #endif // NUMBER_LIGHTS
 
+vec3 getCameraPosition()
+{
+	return vec3(osg_ViewMatrixInverse[3][0], osg_ViewMatrixInverse[3][1], osg_ViewMatrixInverse[3][2]);
+}
+
+vec3 getWorldPosition()
+{
+	return texture(gPosition, TexCoords).rgb;
+}
+
+vec3 getWorldNormal()
+{
+	return texture(gNormal, TexCoords).rgb;
+}
+
+vec3 getAlbedo()
+{
+	return texture(gAlbedoSpec, TexCoords).rgb;
+}
+
+vec3 getRMA()
+{
+	return texture(gRMA, TexCoords).rgb;
+}
+
 
 void main()
 {             
     // retrieve data from gbuffer
-	vec3  camPos = vec3(osg_ViewMatrix[3][0], osg_ViewMatrix[3][1], osg_ViewMatrix[3][2]);
-    vec3  worldPos  = texture(gPosition, TexCoords).rgb;
-    vec3  worldNormal   = texture(gNormal, TexCoords).rgb;
-    vec3  albedo   = texture(gAlbedoSpec, TexCoords).rgb;
-    float specular = texture(gAlbedoSpec, TexCoords).a;
+	vec3  camPos      = getCameraPosition();
+	vec3  worldPos    = getWorldPosition();
+	vec3  worldNormal = getWorldNormal();
+	vec3  albedo      = getAlbedo();
+	vec3  RMA         = getRMA();
+
+	float roughness = RMA.r;
+	float metallic  = RMA.g;
+	float ao        = RMA.b;
 
      // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0 
     // of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)    
@@ -167,7 +180,7 @@ void main()
 	for (int i = 0; i < NUMBER_LIGHTS; ++i)
 	{
 		Light light = Lights[i];
-		Lo += CalcPointOrDirectionalLight( light, camPos, worldPos, worldNormal, F0, albedo);
+		Lo += CalcPointOrDirectionalLight( light, camPos, worldPos, worldNormal, F0, albedo, metallic, roughness);
 	}
 #endif
 

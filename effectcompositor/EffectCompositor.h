@@ -139,6 +139,7 @@ public:
         FRUSTUM_FAR_PLANE,
         SCENE_FOV_IN_RADIANS,
         SCENE_ASPECT_RATIO,
+		SCENE_VIEW_MATRIX,
         SCENE_MODELVIEW_MATRIX,
         SCENE_INV_MODELVIEW_MATRIX,
         SCENE_PROJECTION_MATRIX,
@@ -187,6 +188,14 @@ public:
     */
     void setPreservedNearAndFar( unsigned int frame, double zn, double zf );
     void getPreservedNearAndFar( double& zn, double& zf ) { zn = _preservedZNear; zf = _preservedZFar; }
+
+	void setPreservedProjectMatrix(const osg::Matrixd& mat);
+	void setPreservedModelViewMatrix(const osg::Matrixd& mat);
+	void setPreservedViewMatrix(const osg::Matrixd& mat);
+
+	osg::Matrixd getPreservedProjectMatrix() const;
+	osg::Matrixd getPreservedModelViewAMatrix() const;
+	osg::Matrixd getPreservedViewMatrix() const;
     
     /** Create a new pass from XML
         A typical definition is:
@@ -267,6 +276,10 @@ protected:
     double _preservedZNear;
     double _preservedZFar;
     unsigned int _preservingNearFarFrameNumber;
+
+	osg::Matrixd _preservedProjectMatrix;
+	osg::Matrixd _preservedModelViewMatrix;
+	osg::Matrixd _preservedViewMatrix;
 };
 
 /** Read effect compositor from the XML file/stream */

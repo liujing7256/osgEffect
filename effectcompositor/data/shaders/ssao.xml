@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<compositor>
+
+  <shader name="gbuffer_vs" type="vertex">
+    <file>gbuffer_ssao.vs</file>
+  </shader>
+
+  <shader name="gbuffer_fs" type="fragment">
+    <file>gbuffer_ssao.fs</file>
+  </shader>
+
+  <shader name="deferred_ssao_vs" type="vertex">
+    <file>deferred_ssao.vs</file>
+  </shader>
+
+  <shader name="deferred_ssao_fs" type="fragment">
+    <file>deferred_ssao.fs</file>
+  </shader>
+
+  <shader name="deferred_ssao_blur_vs" type="vertex">
+    <file>deferred_ssao_blur.vs</file>
+  </shader>
+
+  <shader name="deferred_ssao_blur_fs" type="fragment">
+    <file>deferred_ssao_blur.fs</file>
+  </shader>
+
+  <shader name="deferred_combine_vs" type="vertex">
+    <file>deferred_combine.vs</file>
+  </shader>
+
+  <shader name="deferred_combine_fs" type="fragment">
+    <file>deferred_combine.fs</file>
+  </shader>
+
+  <uniform name="projectionMatrix" type="mat4">
+    <inbuilt_value>projection_matrix</inbuilt_value>
+  </uniform>
+
+  <uniform name="viewMatrix" type="mat4">
+    <inbuilt_value>view_matrix</inbuilt_value>
+  </uniform>
+
+  <uniform name="nearPlaneValue" type="float">
+    <inbuilt_value>near_plane</inbuilt_value>
+  </uniform>
+
+  <uniform name="farPlaneValue" type="float">
+    <inbuilt_value>far_plane</inbuilt_value>
+  </uniform>
+
+  <uniform name="viewportWidth" type="float">
+    <inbuilt_value>viewport_width</inbuilt_value>
+  </uniform>
+
+  <uniform name="viewportHeight" type="float">
+    <inbuilt_value>viewport_height</inbuilt_value>
+  </uniform>
+
+  <uniform name="useAO" type="int">
+    <value>1</value>
+  </uniform>
+
+  <buffer name="g_Position" type="2d" width="1280" height="720">
+    <internal_format>rgb16f</internal_format>
+    <source_format>rgb</source_format>
+    <source_type>float</source_type>
+  </buffer>
+
+  <buffer name="g_Normal" type="2d" width="1280" height="720">
+    <internal_format>rgb16f</internal_format>
+    <source_format>rgb</source_format>
+    <source_type>float</source_type>
+  </buffer>
+
+  <buffer name="g_Noise" type="2d" width="1280" height="720">
+    <internal_format>rgb32f</internal_format>
+    <source_format>rgb</source_format>
+    <source_type>float</source_type>
+    <filter>nearest</filter>
+    <wrap>repeat</wrap>
+    <rawfile s="4" t="4" r="0">noise.dat</rawfile>
+  </buffer>
+
+  <buffer name="g_SSAO" type="2d" width="1280" height="720">
+    <internal_format>red</internal_format>
+    <source_format>rgb</source_format>
+    <source_type>float</source_type>
+    <filter>nearest</filter>
+  </buffer>
+
+  <buffer name="g_SSAO_BLUR" type="2d" width="1280" height="720">
+    <internal_format>red</internal_format>
+    <source_format>rgb</source_format>
+    <source_type>float</source_type>
+    <filter>nearest</filter>
+  </buffer>
+
+  <technique>
+    <forward_pass name="Geometry_Pass">
+      <clear_color>0 0 0 1</clear_color>
+      <output_buffer target="color 0">g_Position</output_buffer>
+      <output_buffer target="color 1">g_Normal</output_buffer>
+      <shader>gbuffer_vs</shader>
+      <shader>gbuffer_fs</shader>
+    </forward_pass>
+
+    <deferred_pass name="Deferred_SSAO_Pass">
+      <input_buffer unit="0" varname="gPosition">g_Position</input_buffer>
+      <input_buffer unit="1" varname="gNormal">g_Normal</input_buffer>
+      <input_buffer unit="2" varname="gNoise">g_Noise</input_buffer>
+      <output_buffer target="color">g_SSAO</output_buffer>
+      <uniform>projectionMatrix</uniform>
+      <uniform>viewMatrix</uniform>
+      <uniform>nearPlaneValue</uniform>
+      <uniform>farPlaneValue</uniform>
+      <uniform>viewportWidth</uniform>
+      <uniform>viewportHeight</uniform>
+      <shader>deferred_ssao_vs</shader>
+      <shader>deferred_ssao_fs</shader>
+    </deferred_pass>
+
+    <deferred_pass name="Deferred_SSAO_BLUR_Pass">
+      <input_buffer unit="0" varname="gSSAO">g_SSAO</input_buffer>
+      <output_buffer target="color">g_SSAO_BLUR</output_buffer>
+      <uniform>viewportWidth</uniform>
+      <uniform>viewportHeight</uniform>
+      <shader>deferred_ssao_blur_vs</shader>
+      <shader>deferred_ssao_blur_fs</shader>
+    </deferred_pass>
+    
+    <deferred_pass name="Deferred_SSAO_COMBINE_Pass">
+      <input_buffer unit="0" varname="gSSAO">g_SSAO</input_buffer>
+      <input_buffer unit="1" varname="gBLUR">g_SSAO_BLUR</input_buffer>
+      <input_buffer unit="2" varname="gPosition">g_Position</input_buffer>
+      <input_buffer unit="3" varname="gNormal">g_Normal</input_buffer>
+      <input_buffer unit="4" varname="gNoise">g_Noise</input_buffer>
+      <uniform>viewportWidth</uniform>
+      <uniform>viewportHeight</uniform>
+      <shader>deferred_combine_vs</shader>
+      <shader>deferred_combine_fs</shader>
+    </deferred_pass>
+    
+  </technique>
+
+</compositor>
