@@ -5,8 +5,8 @@ in vec3 osg_Normal;
 in vec4 osg_MultiTexCoord0;
 
 out vec2 TexCoords;
-out vec3 WorldPos;
-out vec3 WorldNormal;
+out vec3 CsPos;
+out vec3 CsNormal;
 
 uniform mat4 osg_ViewMatrix;
 uniform mat4 osg_ViewMatrixInverse;
@@ -19,15 +19,8 @@ void main()
 {
 	TexCoords = osg_MultiTexCoord0.xy;
 
-	mat4 worldMatrix = osg_ViewMatrixInverse * osg_ModelViewMatrix;
-	WorldPos = (worldMatrix * osg_Vertex).xyz;
-
-	WorldPos = (osg_ModelViewMatrix * osg_Vertex).xyz;
-
-	mat3 normalMatrix = transpose(inverse(mat3(worldMatrix)));
-	WorldNormal = normalMatrix * osg_Normal;
-
-	WorldNormal = -osg_NormalMatrix * osg_Normal;
+	CsPos = (osg_ModelViewMatrix * osg_Vertex).xyz;
+	CsNormal = osg_NormalMatrix * osg_Normal;
 
 	gl_Position = osg_ModelViewProjectionMatrix * osg_Vertex;
 }

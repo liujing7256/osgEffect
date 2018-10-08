@@ -15,6 +15,7 @@
 #include <osgShadow/ViewDependentShadowMap>
 #include <osgViewer/ViewerEventHandlers>
 #include <osgViewer/Viewer>
+#include <osg/AutoTransform>
 
 #include "SkyBox.h"
 #include "EffectCompositor.h"
@@ -287,7 +288,8 @@ int main( int argc, char** argv )
 
 	}
 	
-    osg::ref_ptr<osg::Group> scene = new osg::Group;
+    osg::ref_ptr<osg::AutoTransform> scene = new osg::AutoTransform;
+	scene->setScale(1.0);
     if ( useSkyBox ) scene->addChild( createSkyBox( model->getBound().radius() ) );
     scene->addChild( shadowed ? createShadowedScene(model) : model );
     
@@ -375,6 +377,9 @@ int main( int argc, char** argv )
     viewer.addEventHandler( new osgViewer::StatsHandler );
     viewer.addEventHandler( new osgViewer::WindowSizeHandler );
     viewer.setSceneData( root.get() );
+
+
+	viewer.getCamera()->setComputeNearFarMode(osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES);
     
     if ( displayMode>0 )
         configureViewerForMode( viewer, compositor, scene.get(), 0);

@@ -84,18 +84,17 @@ vec3 samples[64] = vec3[](
 
 vec3 getCsPosition()
 {
-	//return mat3(viewMatrix) * texture(gPosition, TexCoords).rgb;
-
-	return texture(gPosition, TexCoords).rgb;
+	return vec3(texture(gPosition, TexCoords).rgb);
 }
 
 vec3 getCsNormal()
 {
-	vec3 worldNormal = texture(gNormal, TexCoords).rgb;
-	mat3 normalMatrix = transpose(inverse(mat3(viewMatrix)));
-	//return mat3(viewMatrix) * worldNormal;
+	return vec3(texture(gNormal, TexCoords).rgb);
+}
 
-	return worldNormal;
+float getSampleDepth(in vec2 st)
+{
+	return vec3(texture(gPosition, st).rgb).z;
 }
 
 vec3 getRandomVec()
@@ -106,8 +105,8 @@ vec3 getRandomVec()
 
 // parameters (you'd probably want to use them as uniforms to more easily tweak the effect)
 int kernelSize = 64;
-float radius = 500.0;
-float bias = 0.5;
+float radius = 1000.0;
+float bias = 1.0;
 
 void main()
 {
@@ -133,10 +132,10 @@ void main()
 		offset.xyz /= offset.w; // perspective divide
 		offset.xyz = offset.xyz * 0.5 + 0.5; // transform to range 0.0 - 1.0
 
-											 // get sample depth
-		float sampleDepth = texture(gPosition, offset.xy).z; // get depth value of kernel sample
+		// get sample depth
+		float sampleDepth = getSampleDepth(offset.xy); // get depth value of kernel sample
 
-															 // range check & accumulate
+		// range check & accumulate
 		float rangeCheck = smoothstep(0.0, 1.0, radius / abs(fragPos.z - sampleDepth));
 		occlusion += (sampleDepth >= sample.z + bias ? 1.0 : 0.0) * rangeCheck;
 	}

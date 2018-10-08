@@ -27,7 +27,7 @@ void main()
 	}
 	//else
 	{
-		//FragColor = vec4(bao, bao, bao, 1.0);
+		FragColor = vec4(bao, bao, bao, 1.0);
 	}
 	
 

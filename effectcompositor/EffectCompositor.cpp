@@ -501,14 +501,7 @@ void EffectCompositor::traverse( osg::NodeVisitor& nv )
                     itr->second->set( (float)aspectRatio );
                     break;
 				case SCENE_VIEW_MATRIX:
-				{
-					//if (cv->getCurrentCamera()) itr->second->set(cv->getCurrentCamera()->getViewMatrix());
-
-					osg::Matrixd mat1 = cv->getCurrentCamera()->getViewMatrix();
-					osg::Matrixd mat2 = getPreservedViewMatrix();
-					itr->second->set(mat1);
-				}
-				
+					if (cv->getCurrentCamera()) itr->second->set(cv->getCurrentCamera()->getViewMatrix());
 					break;
                 case SCENE_MODELVIEW_MATRIX:
                     if ( cv->getModelViewMatrix() ) itr->second->set( osg::Matrixf(*cv->getModelViewMatrix()) );
