@@ -10,6 +10,7 @@ uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedoSpec;
 uniform sampler2D gRMA;
+uniform sampler2D gSSAO;
 
 uniform mat4 osg_ViewMatrixInverse;
 
@@ -154,6 +155,11 @@ vec3 getRMA()
 	return texture(gRMA, TexCoords).rgb;
 }
 
+float getSSAO()
+{
+	return texture(gSSAO, TexCoords).r;
+}
+
 
 void main()
 {             
@@ -163,6 +169,7 @@ void main()
 	vec3  worldNormal = getWorldNormal();
 	vec3  albedo      = getAlbedo();
 	vec3  RMA         = getRMA();
+	float ssao        = getSSAO();
 
 	float roughness = RMA.r;
 	float metallic  = RMA.g;
@@ -193,7 +200,7 @@ void main()
     // HDR tonemapping
     color = color / (color + vec3(1.0));
     // gamma correct
-    color = pow(color, vec3(1.0/2.2)); 
+    color = pow(color, vec3(1.0/2.2)) * ssao;
 
     FragColor = vec4(color, 1.0);
 }

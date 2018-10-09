@@ -2,14 +2,18 @@
 
 #pragma import_defines ( ALBEDOMAP METALLICMAP ROUGHNESSMAP AOMAP NORMALMAP )
 
-layout (location = 0) out vec3 gPosition;
-layout (location = 1) out vec3 gNormal;
-layout (location = 2) out vec4 gAlbedoSpec;
-layout (location = 3) out vec3 gRMA;
+layout (location = 0) out vec3 gWsPosition;
+layout (location = 1) out vec3 gWsNormal;
+layout (location = 2) out vec3 gCsPosition;
+layout (location = 3) out vec3 gCsNormal;
+layout (location = 4) out vec4 gAlbedoSpec;
+layout (location = 5) out vec3 gRMA;
 
 in vec2 TexCoords;
 in vec3 WorldPos;
 in vec3 WorldNormal;
+in vec3 CsPos;
+in vec3 CsNormal;
 in vec3 Color;
 
 // material parameters
@@ -101,9 +105,12 @@ vec3 getWorldNormal()
 void main()
 {    
     // store the fragment position vector in the first gbuffer texture
-    gPosition = WorldPos;
+    gWsPosition = WorldPos;
     // also store the per-fragment normals into the gbuffer
-    gNormal = getWorldNormal();
+    gWsNormal = getWorldNormal();
+
+	gCsPosition = CsPos;
+	gCsNormal = CsNormal;
 
     // and the diffuse per-fragment color
     gAlbedoSpec.rgb = getAlbedo();

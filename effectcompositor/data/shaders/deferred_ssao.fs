@@ -85,28 +85,38 @@ vec3 samples[64] = vec3[](
 vec3 getCsPosition()
 {
 	return vec3(texture(gPosition, TexCoords).rgb);
+
+	//vec4 worldPos = vec4(texture(gPosition, TexCoords).rgb, 1.0);
+	//return (viewMatrix * worldPos).xyz;
 }
 
 vec3 getCsNormal()
 {
 	return vec3(texture(gNormal, TexCoords).rgb);
+
+	//vec3 worldNormal  = vec3(texture(gNormal, TexCoords).rgb);
+	//mat3 normalMatrix = transpose(inverse(mat3(viewMatrix)));
+	//return (normalMatrix * worldNormal).xyz;
 }
 
 float getSampleDepth(in vec2 st)
 {
 	return vec3(texture(gPosition, st).rgb).z;
+
+	//vec4 worldPos = vec4(texture(gPosition, TexCoords).rgb, 1.0);
+	//return (viewMatrix * worldPos).z;
 }
 
 vec3 getRandomVec()
 {
-	vec2 noiseScale = vec2(1280 / 4.0, 720 / 4.0);
+	vec2 noiseScale = vec2(viewportWidth / 4.0, viewportHeight / 4.0);
 	return normalize(texture(gNoise, TexCoords * noiseScale).xyz);
 }
 
 // parameters (you'd probably want to use them as uniforms to more easily tweak the effect)
 int kernelSize = 64;
 float radius = 1000.0;
-float bias = 1.0;
+float bias = 0.5;
 
 void main()
 {

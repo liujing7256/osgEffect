@@ -16,6 +16,8 @@
 #include <osgViewer/ViewerEventHandlers>
 #include <osgViewer/Viewer>
 #include <osg/AutoTransform>
+#include <osgGA/TrackballManipulator>
+#include <osgGA/FirstPersonManipulator>
 
 #include "SkyBox.h"
 #include "EffectCompositor.h"
@@ -267,24 +269,26 @@ int main( int argc, char** argv )
     if (!model){ model = createMaterialSpheres();}
 	else
 	{
-		osg::Texture2D* albedo = createTexture(MATERIAL_NAME + "\\albedo.png");
-		osg::Texture2D* normal = createTexture(MATERIAL_NAME + "\\normal.png");
-		osg::Texture2D* metallic = createTexture(MATERIAL_NAME + "\\metallic.png");
-		osg::Texture2D* roughness = createTexture(MATERIAL_NAME + "\\roughness.png");
-		osg::Texture2D* ao = createTexture(MATERIAL_NAME + "\\ao.png");
+		//osg::Texture2D* albedo = createTexture(MATERIAL_NAME + "\\albedo.png");
+		//osg::Texture2D* normal = createTexture(MATERIAL_NAME + "\\normal.png");
+		//osg::Texture2D* metallic = createTexture(MATERIAL_NAME + "\\metallic.png");
+		//osg::Texture2D* roughness = createTexture(MATERIAL_NAME + "\\roughness.png");
+		//osg::Texture2D* ao = createTexture(MATERIAL_NAME + "\\ao.png");
 		
 
-		PhysicMaterial* material = new PhysicMaterial();
-		material->setAlbedoMap(albedo);
-	    material->setNormalMap(normal);
+		//PhysicMaterial* material = new PhysicMaterial();
 
-		material->setMetallicMap(metallic);
-		material->setRoughnessMap(roughness);
-		material->setAoMap(ao);
+		//material->setAlbedo(osg::Vec3f(0.5,0.5,0.5));
+		//material->setAlbedoMap(albedo);
+	    //material->setNormalMap(normal);
 
-		material->setIrradianceMap(PhysicMaterial::loadCubeMap("\\skybox\\room\\"));
+		//material->setMetallicMap(metallic);
+		//material->setRoughnessMap(roughness);
+		//material->setAoMap(ao);
 
-		model->setStateSet(material);
+		//material->setIrradianceMap(PhysicMaterial::loadCubeMap("\\skybox\\room\\"));
+
+		//model->setStateSet(material);
 
 	}
 	
@@ -380,8 +384,10 @@ int main( int argc, char** argv )
 
 
 	viewer.getCamera()->setComputeNearFarMode(osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES);
+
+
     
-    if ( displayMode>0 )
+   if ( displayMode>0 )
         configureViewerForMode( viewer, compositor, scene.get(), 0);
 
     viewer.setUpViewInWindow((1920 - WINDOW_WIDTH) / 2, (1080 - WINDOW_HEIGHT) / 2, WINDOW_WIDTH, WINDOW_HEIGHT, 0);

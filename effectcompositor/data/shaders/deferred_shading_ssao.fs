@@ -87,24 +87,34 @@ vec3 samples[64] = vec3[](
 
 vec3 getCsPosition()
 {
-	//return mat3(viewMatrix) * texture(gPosition, TexCoords).rgb;
 
-	return texture(gPosition, TexCoords).rgb;
+	vec4 worldPos = vec4(texture(gPosition, TexCoords).rgb, 1.0);
+
+	return (viewMatrix * worldPos).xyz;
+
+	//return texture(gPosition, TexCoords).rgb;
 }
 
 vec3 getCsNormal()
 {
 	vec3 worldNormal = texture(gNormal, TexCoords).rgb;
 	mat3 normalMatrix = transpose(inverse(mat3(viewMatrix)));
-	//return mat3(viewMatrix) * worldNormal;
+	return mat3(viewMatrix) * worldNormal;
 
-	return worldNormal;
+	//return worldNormal;
+}
+
+float getSampleDepth(vec2 st)
+{
+	vec4 worldPos = vec4(texture(gPosition, st).rgb, 1.0);
+	return (viewMatrix * worldPos).z;
 }
 
 vec3 getAlbedo()
 {
 	return texture(gAlbedoSpec, TexCoords).rgb;
 }
+
 
 vec3 getRandomVec()
 {
@@ -142,8 +152,9 @@ void main()
 		offset.xyz = offset.xyz * 0.5 + 0.5; // transform to range 0.0 - 1.0
 
 											 // get sample depth
-		float sampleDepth = texture(gPosition, offset.xy).z; // get depth value of kernel sample
+		//float sampleDepth = texture(gPosition, offset.xy).z; // get depth value of kernel sample
 
+		float sampleDepth = getSampleDepth(offset.xy);
 															 // range check & accumulate
 		float rangeCheck = smoothstep(0.0, 1.0, radius / abs(fragPos.z - sampleDepth));
 		occlusion += (sampleDepth >= sample.z + bias ? 1.0 : 0.0) * rangeCheck;

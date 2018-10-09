@@ -19,8 +19,16 @@ void main()
 {
 	TexCoords = osg_MultiTexCoord0.xy;
 
+
 	CsPos = (osg_ModelViewMatrix * osg_Vertex).xyz;
 	CsNormal = osg_NormalMatrix * osg_Normal;
+
+
+	mat4 worldMatrix = osg_ViewMatrixInverse * osg_ModelViewMatrix;
+	CsPos = (worldMatrix * osg_Vertex).xyz;
+
+	mat3 normalMatrix = transpose(inverse(mat3(worldMatrix)));
+	//CsNormal = normalMatrix * osg_Normal;
 
 	gl_Position = osg_ModelViewProjectionMatrix * osg_Vertex;
 }
